@@ -14,7 +14,15 @@ def str_to_digit(string):
     return str(int(result))
 
 
-def get_car_data(user_car, user_car_year):
+def get_car_data(user_car, user_car_year,mode):
+    try:
+        with open(file=f"./cars_data/{user_car.replace('/','_')}.csv", mode=mode, encoding='utf-8', newline="\n") as cf:
+            writer = csv.writer(cf)
+            writer.writerow(['year', 'usage', 'price'])
+    except:
+        print('done')
+        return
+
     url = f"https://divar.ir/s/tehran/car/{user_car}?production-year={int(user_car_year)+1}-{int(user_car_year)-1}"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:70.0) Gecko/20100101 Firefox/70.0'}
@@ -26,7 +34,7 @@ def get_car_data(user_car, user_car_year):
     scroll_pause_time = 3
     screen_height = driver.execute_script('return window.screen.height;')
     cars_cards = []
-    for i in range(10):
+    for i in range(30):
         # scroll one screen height each time
         driver.execute_script(
             "window.scrollTo(0, {screen_height}*{i});".format(screen_height=screen_height, i=i))
@@ -42,13 +50,8 @@ def get_car_data(user_car, user_car_year):
         if (screen_height) * i > scroll_height:
             break
 
-    try:
-        with open(file=f"./cars_data/{user_car.replace('/','_')}.csv", mode='tx', encoding='utf-8', newline="\n") as cf:
-            writer = csv.writer(cf)
-            writer.writerow(['year', 'usage', 'price'])
-    except:
-        print('done')
-        return
+    
+
 
     print('catching data')
     for car in cars_cards:

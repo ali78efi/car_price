@@ -5,6 +5,6 @@ user_car = input("enter your car(example: peugeot pars elx-tu5): ")
 user_car = user_car.strip(' ').replace(' ', '/')
 user_car_year = str_to_digit(input("enter your car model(example: 1399): "))
 user_car_usage = str_to_digit(input("enter your car usage(example: 73,000): "))
-
-get_car_data(user_car, user_car_year)
+mode =input('enter x for get available data or enter r for update data: ')
+get_car_data(user_car, user_car_year,mode)
 predict([user_car, user_car_year, user_car_usage])
