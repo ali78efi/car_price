@@ -14,7 +14,7 @@ def str_to_digit(string):
     return str(int(result))
 
 
-def get_car_data(user_car, user_car_year,mode):
+def get_car_data(user_car, user_car_year, mode):
     try:
         with open(file=f"./cars_data/{user_car.replace('/','_')}.csv", mode=mode, encoding='utf-8', newline="\n") as cf:
             writer = csv.writer(cf)
@@ -46,12 +46,12 @@ def get_car_data(user_car, user_car_year,mode):
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         cards = soup.find_all(
             'div', {'class': "waf972"})
-        cars_cards.extend(cards)
+        for card in cards:
+            if card not in cars_cards:
+                cars_cards.extend(card)
+
         if (screen_height) * i > scroll_height:
             break
-
-    
-
 
     print('catching data')
     for car in cars_cards:
