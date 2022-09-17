@@ -48,7 +48,7 @@ def get_car_data(user_car, user_car_year, mode):
             'div', {'class': "waf972"})
         for card in cards:
             if card not in cars_cards:
-                cars_cards.extend(card)
+                cars_cards.append(card)
 
         if (screen_height) * i > scroll_height:
             break
