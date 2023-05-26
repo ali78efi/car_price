@@ -23,18 +23,22 @@ def get_car_data(user_car, user_car_year, mode):
         print('done')
         return
 
-    url = f"https://divar.ir/s/tehran/car/{user_car}?production-year={int(user_car_year)+1}-{int(user_car_year)-1}"
+    url = f"https://divar.ir/s/tehran/car/{user_car}?production-year={int(user_car_year)+3}-{int(user_car_year)-3}"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:70.0) Gecko/20100101 Firefox/70.0'}
     # response = requests.get(
     #     f"https://divar.ir/s/tehran/car/{user_car}?production-year={int(user_car_year)+1}-{int(user_car_year)-1}", headers=headers)
+    print('installing chrome driver...')
     driver = webdriver.Chrome(ChromeDriverManager().install())
+    print("installed")
     driver.get(url)
     time.sleep(5)
     scroll_pause_time = 3
     screen_height = driver.execute_script('return window.screen.height;')
     cars_cards = []
-    for i in range(30):
+    
+    print('catching data')
+    for i in range(100):
         # scroll one screen height each time
         driver.execute_script(
             "window.scrollTo(0, {screen_height}*{i});".format(screen_height=screen_height, i=i))
@@ -45,21 +49,34 @@ def get_car_data(user_car, user_car_year, mode):
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         cards = soup.find_all(
-            'div', {'class': "waf972"})
+            'div', {'class': "post-card-item-af972 kt-col-6-bee95 kt-col-xxl-4-e9d46"})
         for card in cards:
             if card not in cars_cards:
                 cars_cards.append(card)
-
+        
         if (screen_height) * i > scroll_height:
             break
 
-    print('catching data')
+
+
+
+
     for car in cars_cards:
         sub_url = 'https://divar.ir'+car.find('a')['href']
         sub_res = requests.get(sub_url, headers=headers)
         sub_soup = BeautifulSoup(sub_res.text, 'html.parser')
         cars_detail = sub_soup.find_all(
             'span', {'class': 'kt-group-row-item__value'})
+        cars_detail.append(sub_soup.find(
+            'a', {'class': 'kt-unexpandable-row__action kt-text-truncate'}
+        ))
+
+        if len(cars_detail) != 4 :
+            continue
+        if cars_detail[2].text == 'زرد' :
+            continue
+        # if "بنزینی" in cars_detail[3].text: 
+        #     continue
         year = int(cars_detail[1].text)
         usage = str_to_digit(cars_detail[0].text)
         price = sub_soup.find_all(
